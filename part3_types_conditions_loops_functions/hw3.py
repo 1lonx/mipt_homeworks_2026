@@ -199,5 +199,6 @@ def stats_handler(report_date: str) -> str:
 def main() -> None:
     pass
 
+
 if __name__ == "__main__":
     main()
