@@ -4,6 +4,7 @@ import sys
 from collections.abc import Generator
 from typing import Any, cast
 
+# Type aliases to reduce complexity in function signatures
 Transaction = dict[str, Any]
 CostDict = dict[str, float]
 
@@ -80,7 +81,10 @@ def extract_date(maybe_dt: str) -> tuple[int, int, int] | None:
     d, m, y = map(int, parts)
     if not (1 <= m <= MONTH_MAX):
         return None
-    ok = 1 <= d <= FEB_LEAP_DAYS if m == FEBRUARY and is_leap_year(y) else 1 <= d <= DAYS_IN_MONTH[m - 1]
+    if m == FEBRUARY and is_leap_year(y):
+        ok = 1 <= d <= FEB_LEAP_DAYS
+    else:
+        ok = 1 <= d <= DAYS_IN_MONTH[m - 1]
     return (d, m, y) if ok else None
 
 
@@ -240,7 +244,8 @@ def _format_stats_lines(
         "Details (category: amount):",
     ]
     if cat_exp_month:
-        lines.extend(f"{idx}. {cat}: {_fmt_amt(amt)}" for idx, (cat, amt) in enumerate(cat_exp_month.items()))
+        for idx, (cat, amt) in enumerate(cat_exp_month.items()):
+            lines.append(f"{idx}. {cat}: {_fmt_amt(amt)}")
     return lines
 
 
