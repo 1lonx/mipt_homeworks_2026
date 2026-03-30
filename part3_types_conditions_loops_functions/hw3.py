@@ -4,7 +4,6 @@ import sys
 from collections.abc import Generator
 from typing import Any, cast
 
-# Type aliases to reduce complexity in function signatures
 Transaction = dict[str, Any]
 CostDict = dict[str, float]
 
@@ -81,7 +80,7 @@ def extract_date(maybe_dt: str) -> tuple[int, int, int] | None:
     d, m, y = map(int, parts)
     if not (1 <= m <= MONTH_MAX):
         return None
-    if m == FEBRUARY and is_leap_year(y):
+    if m == FEBRUARY and is_leap_year(y):  # noqa: SIM108
         ok = 1 <= d <= FEB_LEAP_DAYS
     else:
         ok = 1 <= d <= DAYS_IN_MONTH[m - 1]
