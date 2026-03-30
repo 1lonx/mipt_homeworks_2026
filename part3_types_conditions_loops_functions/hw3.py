@@ -4,7 +4,6 @@ import sys
 from collections.abc import Generator
 from typing import Any, cast
 
-# Type aliases to reduce complexity in function signatures
 Transaction = dict[str, Any]
 CostDict = dict[str, float]
 
@@ -35,8 +34,18 @@ MIN_COST_ARGS = 2
 STATS_ARGS = 2
 
 DAYS_IN_MONTH = [
-    31, 28, 31, 30, 31, 30,
-    31, 31, 30, 31, 30, 31,
+    31,
+    28,
+    31,
+    30,
+    31,
+    30,
+    31,
+    31,
+    30,
+    31,
+    30,
+    31,
 ]
 
 EXPENSE_CATEGORIES = {
@@ -71,11 +80,7 @@ def extract_date(maybe_dt: str) -> tuple[int, int, int] | None:
     d, m, y = map(int, parts)
     if not (1 <= m <= MONTH_MAX):
         return None
-    ok = (
-        1 <= d <= FEB_LEAP_DAYS
-        if m == FEBRUARY and is_leap_year(y)
-        else 1 <= d <= DAYS_IN_MONTH[m - 1]
-    )
+    ok = 1 <= d <= FEB_LEAP_DAYS if m == FEBRUARY and is_leap_year(y) else 1 <= d <= DAYS_IN_MONTH[m - 1]
     return (d, m, y) if ok else None
 
 
@@ -95,11 +100,13 @@ def income_handler(amount: float, income_date: str) -> str:
     if date_tup is None:
         financial_transactions_storage.append({})
         return INCORRECT_DATE_MSG
-    financial_transactions_storage.append({
-        KEY_TYPE: VALUE_INCOME,
-        KEY_AMOUNT: amount,
-        KEY_DATE: date_tup,
-    })
+    financial_transactions_storage.append(
+        {
+            KEY_TYPE: VALUE_INCOME,
+            KEY_AMOUNT: amount,
+            KEY_DATE: date_tup,
+        }
+    )
     return OP_SUCCESS_MSG
 
 
@@ -114,12 +121,14 @@ def cost_handler(category_name: str, amount: float, income_date: str) -> str:
     if not _is_valid_category(category_name):
         financial_transactions_storage.append({})
         return NOT_EXISTS_CATEGORY
-    financial_transactions_storage.append({
-        KEY_TYPE: VALUE_COST,
-        KEY_AMOUNT: amount,
-        KEY_DATE: date_tup,
-        KEY_CATEGORY: category_name,
-    })
+    financial_transactions_storage.append(
+        {
+            KEY_TYPE: VALUE_COST,
+            KEY_AMOUNT: amount,
+            KEY_DATE: date_tup,
+            KEY_CATEGORY: category_name,
+        }
+    )
     return OP_SUCCESS_MSG
 
 
@@ -231,10 +240,7 @@ def _format_stats_lines(
         "Details (category: amount):",
     ]
     if cat_exp_month:
-        lines.extend(
-            f"{idx}. {cat}: {_fmt_amt(amt)}"
-            for idx, (cat, amt) in enumerate(cat_exp_month.items())
-        )
+        lines.extend(f"{idx}. {cat}: {_fmt_amt(amt)}" for idx, (cat, amt) in enumerate(cat_exp_month.items()))
     return lines
 
 
