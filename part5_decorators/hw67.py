@@ -1,7 +1,7 @@
 import functools
 import json
 from datetime import UTC, datetime, timedelta
-from typing import Any, ParamSpec, Protocol, TypeVar
+from typing import Any, ParamSpec, Protocol, TypeVar, cast
 from urllib.request import urlopen
 
 INVALID_CRITICAL_COUNT = "Breaker count must be positive integer!"
@@ -79,7 +79,7 @@ class CircuitBreaker:
 
     def _check_blocked(self, state: _State, func_name: str) -> None:
         if state.block_until is not None and datetime.now(UTC) < state.block_until:
-            raise BreakerError(func_name, state.block_start)
+            raise BreakerError(func_name, cast("datetime", state.block_start))
 
     def _handle_error(self, state: _State, func_name: str, e: Exception) -> None:
         state.fails += 1
