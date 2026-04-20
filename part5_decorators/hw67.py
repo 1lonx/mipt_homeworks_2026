@@ -21,14 +21,10 @@ class CallableWithMeta(Protocol[P, R_co]):
 
 
 class BreakerError(Exception):
-    def __init__(self, func_name: str, block_time: datetime, cause: Exception | None = None):
+    def __init__(self, func_name: str, block_time: datetime):
         self.func_name = func_name
         self.block_time = block_time
-        if cause:
-            super().__init__(TOO_MUCH)
-            self.__cause__ = cause
-        else:
-            super().__init__(TOO_MUCH)
+        super().__init__(TOO_MUCH)
 
 
 class _State:
@@ -48,9 +44,9 @@ class CircuitBreaker:
         triggers_on: type[Exception] = Exception,
     ):
         errors = []
-        if critical_count <= 0:
+        if not isinstance(critical_count, int) or isinstance(critical_count, bool) or critical_count <= 0:
             errors.append(ValueError(INVALID_CRITICAL_COUNT))
-        if time_to_recover <= 0:
+        if not isinstance(time_to_recover, int) or isinstance(time_to_recover, bool) or time_to_recover <= 0:
             errors.append(ValueError(INVALID_RECOVERY_TIME))
         if errors:
             raise ExceptionGroup(VALIDATIONS_FAILED, errors)
@@ -87,7 +83,7 @@ class CircuitBreaker:
             raise e
         state.block_start = datetime.now(UTC)
         state.block_until = state.block_start + timedelta(seconds=self.rec)
-        raise BreakerError(func_name, state.block_start, e) from e
+        raise BreakerError(func_name, state.block_start) from e
 
     def _reset(self, state: _State) -> None:
         state.fails = 0
